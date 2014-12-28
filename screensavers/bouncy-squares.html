@@ -78,14 +78,17 @@
 			max: 10
 		};
 
-		function SquareElement (color) {
+		function SquareElement (color, positionX, positionY) {
 			var element = document.createElement('div');
 
 			element.style.position = 'fixed';
 			element.style.width = square_size + 'px';
 			element.style.height = square_size + 'px';
-			//FIXME: box-shadow not showing up when element is created
+			element.style.left = positionX + 'px';
+			element.style.top = positionY + 'px';
 			element.style.boxShadow = 'inset 0 0 0 ' + (square_size / 4) + 'px ' + color;
+
+			document.body.appendChild(element);
 
 			return element;
 		}
@@ -122,7 +125,7 @@
 		var elements = [];
 
 		function moveElement (obj, index, arr) {
-			//TODO: calculate and move obj.element (etc)
+			console.log(obj);
 		}
 
 		var previous_time = 0;
@@ -138,14 +141,14 @@
 				var speed = randomInRange(square_speed.min, square_speed.max);
 
 				var obj = {
-					element: SquareElement(color),
+					element: SquareElement(color, x, y),
 					positionX: x,
 					positionY: y,
 					updateX: function () {
-						this.element.style.left = this.positionX;
+						this.element.style.left = this.positionX + 'px';
 					},
 					updateY: function () {
-						this.element.style.top = this.positionY;
+						this.element.style.top = this.positionY + 'px';
 					},
 					directionX: plusOrMinus(),
 					directionY: plusOrMinus(),
@@ -154,20 +157,16 @@
 
 				elements.push(obj);
 
-				moveElement(obj);
-
-				document.body.appendChild(element);
-
 				queue--;
 			}
 
 			//animate all elements
 			elements.forEach(moveElement);
 
-			requestAnimationFrame(animate);
+//			requestAnimationFrame(animate);
 		}
 
-//		requestAnimationFrame(animate);
+		requestAnimationFrame(animate);
 		/* end animation */
 
 		/* begin fasterclick */
