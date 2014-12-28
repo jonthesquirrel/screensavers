@@ -73,26 +73,74 @@
 	</div>
 
 	<div class="info">
-		<span onclick="toggleFullscreen();">fullscreen</span>
+		<span id="fullscreen">fullscreen</span>
 	</div>
 
 	<script>
 		'use strict';
 
+		var $fps = document.getElementById('fps');
+		var $count = document.getElementById('count');
+		var $fullscreen = document.getElementById('fullscreen');
+
 		//prevent touch scrolling
 		document.ontouchmove = function (event) { event.preventDefault(); };
 
-		function toggleFullscreen () {
-			//TODO: add more vendor prefixes
-			document.body.webkitRequestFullscreen();
+		/* begin fullscreen */
+		/* polyfills from http://www.sitepoint.com/use-html5-full-screen-api */
 
-			//FUTURE: exit fullscreen if already in fullscreen
+		function enterFullscreen () {
+			var i = document.body;
+
+			if (i.requestFullscreen) {
+				i.requestFullscreen();
+			} else if (i.webkitRequestFullscreen) {
+				i.webkitRequestFullscreen();
+			} else if (i.mozRequestFullScreen) {
+				i.mozRequestFullScreen();
+			} else if (i.msRequestFullscreen) {
+				i.msRequestFullscreen();
+			}
 		}
 
-		/* begin animation */
+		function leaveFullscreen () {
+			if (document.exitFullscreen) {
+				document.exitFullscreen();
+			} else if (document.webkitExitFullscreen) {
+				document.webkitExitFullscreen();
+			} else if (document.mozCancelFullScreen) {
+				document.mozCancelFullScreen();
+			} else if (document.msExitFullscreen) {
+				document.msExitFullscreen();
+			}
+		}
 
-		var $fps = document.getElementById('fps');
-		var $count = document.getElementById('count');
+		function isFullscreen () {
+			if (
+				document.fullscreenElement ||
+				document.webkitFullscreenElement ||
+				document.mozFullScreenElement ||
+				document.msFullscreenElement
+			) {
+				return true;
+			}
+
+			return false;
+		}
+
+		function toggleFullscreen () {
+			if (isFullscreen()) {
+				leaveFullscreen();
+			} else {
+				enterFullscreen();
+			}
+		}
+
+		$fullscreen.addEventListener('click', toggleFullscreen);
+
+		/* end fullscreen */
+
+		/* begin animation */
 
 		function displayFps (fps) {
 			$fps.innerHTML = Math.round(fps) + ' fps';
