@@ -41,11 +41,16 @@
 			z-index: 2;
 		}
 
-		/* TODO: add .noselect for the square elements */
+		.noselect {
+			-khtml-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			-webkit-user-select: none;
+		}
 
 	</style>
 </head>
-<body>
+<body class="noselect">
 	<a href="http://git.io/screensavers" class="nav">git.io/screensavers</a>
 	<!--TODO: add *click* message overlay that (maybe) dissapears on first click-->
 
