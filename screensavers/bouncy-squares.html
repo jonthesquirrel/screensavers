@@ -34,6 +34,7 @@
 </head>
 <body>
 	<a href="http://git.io/screensavers" class="nav">git.io/screensavers</a>
+	<!--TODO: add *click* message overlay that (maybe) dissapears on first click-->
 
 	<script>
 		'use strict';
@@ -42,10 +43,20 @@
 		document.ontouchmove = function (event) { event.preventDefault(); };
 
 		/* begin animation */
-		function SquareElement (color, positionX, positionY) {
+		var square_size = 30;
+		//pixels travelled per frame
+		var square_speed = {
+			min: 1,
+			max: 10
+		};
+
+		function SquareElement (color) {
 			var element = document.createElement('div');
 
-//			element.style.boxShadow = '';
+			element.style.position = 'fixed';
+			element.style.width = square_size + 'px';
+			element.style.height = square_size + 'px';
+			element.style.boxShadow = 'box-shadow: inset 0 0 0 ' + square_size + 'px ' + color;
 
 			return element;
 		}
@@ -58,18 +69,67 @@
 			return '#' + randomInRange(0, 0xffffff).toString(16);
 		}
 
+		function maxX () {
+			return window.innerWidth - square_size;
+		}
+
+		function maxY () {
+			return window.innerHeight - square_size;
+		}
+
+		function randomX () {
+			return randomInRange(0, maxX());
+		}
+
+		function randomY () {
+			return randomInRange(0, maxY());
+		}
+
+		function plusOrMinus () {
+			return (randomInRange(0, 1) === 1) ? '+' : '-';
+		}
+
 		var queue = 1;
 		var elements = [];
 
+		function moveElement (obj, index, arr) {
+			//TODO: calculate and move obj.element (etc)
+		}
+
 		function animate (time) {
 			if (queue > 0) {
-				//add new element with randomized attributes: speed, color, positionX, positionY, directionX, DirectionY
+				//add new element with randomized attributes: speed, color, positionX, positionY, directionX, DirectionY, speed
+				var color = randomColor();
+				var x = randomX();
+				var y = randomY();
+				var speed = randomInRange(square_speed.min, square_speed.max);
 
+				var obj = {
+					element: SquareElement(color),
+					positionX: x,
+					positionY: y,
+					updateX: function () {
+						this.element.style.left = this.positionX;
+					},
+					updateY: function () {
+						this.element.style.top = this.positionY;
+					},
+					directionX: plusOrMinus(),
+					directionY: plusOrMinus(),
+					speed: speed
+				};
+
+				elements.push(obj);
+
+				moveElement(obj);
+
+				document.body.appendChild(element);
 
 				queue--;
 			}
 
 			//animate all elements
+			elements.forEach(moveElement);
 
 			requestAnimationFrame(animate);
 		}
@@ -82,13 +142,12 @@
 
 		var anticlick = 0;
 
-		function spawn () {
+		function spawnSquare () {
 			queue++;
-			alert(' queue: ' + queue + '\n anticlick: ' + anticlick); //debug
 		}
 
 		function handle_touchstart (event) {
-			spawn();
+			spawnSquare();
 
 			anticlick++;
 		}
@@ -97,7 +156,7 @@
 			if (anticlick > 0) {
 				anticlick--;
 			} else {
-				spawn();
+				spawnSquare();
 			}
 		}
 
