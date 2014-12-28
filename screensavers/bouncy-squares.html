@@ -31,6 +31,8 @@
 			z-index: 2;
 		}
 
+		/* TODO: add .noselect for the square elements */
+
 	</style>
 </head>
 <body>
@@ -44,7 +46,9 @@
 		document.ontouchmove = function (event) { event.preventDefault(); };
 
 		/* begin animation */
-		var square_size = 30;
+
+		//diameter of square
+		var square_size = 32;
 		//pixels travelled per frame
 		var square_speed = {
 			min: 1,
@@ -57,7 +61,8 @@
 			element.style.position = 'fixed';
 			element.style.width = square_size + 'px';
 			element.style.height = square_size + 'px';
-			element.style.boxShadow = 'box-shadow: inset 0 0 0 ' + square_size + 'px ' + color;
+			//FIXME: box-shadow not showing up when element is created
+			element.style.boxShadow = 'inset 0 0 0 ' + (square_size / 4) + 'px ' + color;
 
 			return element;
 		}
