@@ -13,15 +13,20 @@
 
 		body {
 			background: black;
+			height: 100%;
+			margin: 0;
+			padding: 0;
+			position: fixed;
+			width: 100%;
 		}
 
 		.nav {
-			position: fixed;
-			top: 0;
-			right: 0;
+			box-shadow: inset 0 0 0 0.5em darkgray;
 			color: darkgray;
 			padding: 1em;
-			box-shadow: inset 0 0 0 0.5em darkgray;
+			position: fixed;
+			right: 0;
+			top: 0;
 		}
 
 	</style>
@@ -29,6 +34,10 @@
 <body>
 	<a href="http://git.io/screensavers" class="nav">git.io/screensavers</a>
 
+	<script>
+		'use strict';
 
+		document.ontouchmove = function (event) { event.preventDefault(); };
+	</script>
 </body>
 </html>
