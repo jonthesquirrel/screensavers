@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<!-- Copyright (c) 2014 Jonathan Herman - MIT License -->
+<!-- https://github.com/jdh11235/screensavers -->
+
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+	<title>Bouncy Squares - screensaver</title>
+
+	<style>
+
+		body {
+			background: black;
+			height: 100%;
+			margin: 0;
+			padding: 0;
+			position: fixed;
+			width: 100%;
+		}
+
+		.nav {
+/*			box-shadow: inset 0 0 0 0.5em darkgray;*/
+			color: darkgray;
+			font-family: fantasy;
+			font-size: 1.1em;
+			padding: 0.5em;
+			position: fixed;
+			right: 0;
+			top: 0;
+			z-index: 4;
+		}
+
+		.status {
+			color: darkgray;
+			font-family: monospace;
+			left: 0;
+			padding: 0.5em;
+			position: fixed;
+			top: 0;
+			z-index: 2;
+		}
+
+		.info {
+			bottom: 0;
+			color: darkgray;
+			cursor: pointer;
+			font-family: fantasy;
+			font-size: 1.1em;
+			left: 0;
+			margin-bottom: 1em;
+			position: fixed;
+			text-align: center;
+			text-decoration: underline;
+			width: 100%;
+			z-index: 3;
+		}
+
+		.noselect {
+			-khtml-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			-webkit-user-select: none;
+		}
+
+	</style>
+</head>
+<body class="noselect">
+	<a href="http://git.io/screensavers" class="nav">git.io/screensavers</a>
+
+	<div class="status">
+		<span id="fps">0 fps</span>
+		<br>
+		<span id="count">1 square</span>
+	</div>
+
+	<div class="info">
+		<span id="fullscreen">fullscreen</span>
+	</div>
+
+	<script>
+		'use strict';
+
+		var $fps = document.getElementById('fps');
+		var $count = document.getElementById('count');
+		var $fullscreen = document.getElementById('fullscreen');
+
+		//prevent touch scrolling
+		document.ontouchmove = function (event) { event.preventDefault(); };
+
+		/* begin fullscreen */
+		/* polyfills from http://www.sitepoint.com/use-html5-full-screen-api */
+
+		function enterFullscreen () {
+			var i = document.body;
+
+			if (i.requestFullscreen) {
+				i.requestFullscreen();
+			} else if (i.webkitRequestFullscreen) {
+				i.webkitRequestFullscreen();
+			} else if (i.mozRequestFullScreen) {
+				i.mozRequestFullScreen();
+			} else if (i.msRequestFullscreen) {
+				i.msRequestFullscreen();
+			}
+		}
+
+		function leaveFullscreen () {
+			if (document.exitFullscreen) {
+				document.exitFullscreen();
+			} else if (document.webkitExitFullscreen) {
+				document.webkitExitFullscreen();
+			} else if (document.mozCancelFullScreen) {
+				document.mozCancelFullScreen();
+			} else if (document.msExitFullscreen) {
+				document.msExitFullscreen();
+			}
+		}
+
+		function isFullscreen () {
+			if (
+				document.fullscreenElement ||
+				document.webkitFullscreenElement ||
+				document.mozFullScreenElement ||
+				document.msFullscreenElement
+			) {
+				return true;
+			}
+
+			return false;
+		}
+
+		function toggleFullscreen () {
+			if (isFullscreen()) {
+				leaveFullscreen();
+			} else {
+				enterFullscreen();
+			}
+		}
+
+		$fullscreen.addEventListener('click', toggleFullscreen);
+
+		/* end fullscreen */
+
+		/* begin animation */
+
+		function displayFps (fps) {
+			$fps.innerHTML = Math.round(fps) + ' fps';
+		}
+
+		var square_count = 1;
+		function displayCount (increment) {
+			square_count += increment;
+			$count.innerHTML = square_count + ' squares';
+		}
+
+		//diameter of square
+		var square_size = 32;
+		//pixels travelled per frame
+		var square_speed = {
+			min: 1,
+			max: 10
+		};
+
+		function SquareElement (color, positionX, positionY) {
+			var element = document.createElement('div');
+
+			element.style.position = 'fixed';
+			element.style.width = square_size + 'px';
+			element.style.height = square_size + 'px';
+			element.style.left = positionX + 'px';
+			element.style.top = positionY + 'px';
+			element.style.boxShadow = 'inset 0 0 0 ' + (square_size / 4) + 'px ' + color;
+
+			document.body.appendChild(element);
+
+			return element;
+		}
+
+		function randomInRange (min, max) {
+			return Math.round(Math.random() * (max - min) + min);
+		}
+
+		function randomMiniHexColor () {
+			//NOTE: will not return #000 (for visibility)
+			var r = randomInRange(1, 0xf).toString(16);
+			var g = randomInRange(1, 0xf).toString(16);
+			var b = randomInRange(1, 0xf).toString(16);
+
+			return '#' + r + g + b;
+		}
+
+		function maxX () {
+			return window.innerWidth - square_size;
+		}
+
+		function maxY () {
+			return window.innerHeight - square_size;
+		}
+
+		function randomX () {
+			return randomInRange(0, maxX());
+		}
+
+		function randomY () {
+			return randomInRange(0, maxY());
+		}
+
+		function plusOrMinus () {
+			return (randomInRange(0, 1) === 1) ? '+' : '-';
+		}
+
+		var queue = 1;
+		var elements = [];
+
+		function moveElement (square, index, arr) {
+			//reverse direction when at or beyond edge of screen
+			if (square.positionX > maxX()) { square.directionX = '-'; }
+			if (square.positionX < 0) { square.directionX = '+'; }
+			if (square.positionY > maxY()) { square.directionY = '-'; }
+			if (square.positionY < 0) { square.directionY = '+'; }
+
+			//move square according to its direction and speed
+			if (square.directionX === '+') { square.positionX += square.speed; }
+			if (square.directionX === '-') { square.positionX -= square.speed; }
+			if (square.directionY === '+') { square.positionY += square.speed; }
+			if (square.directionY === '-') { square.positionY -= square.speed; }
+
+			//render new position
+			square.updatePosition();
+		}
+
+		var previous_time = 0;
+
+		function animate (time) {
+			displayFps(1000 / (time - previous_time));
+			previous_time = time;
+
+			if (queue > 0) {
+				var color = randomMiniHexColor();
+				var x = randomX();
+				var y = randomY();
+				var speed = randomInRange(square_speed.min, square_speed.max);
+
+				var square = {
+					element: SquareElement(color, x, y),
+					positionX: x,
+					positionY: y,
+					updatePosition: function () {
+						this.element.style.left = this.positionX + 'px';
+						this.element.style.top = this.positionY + 'px';
+					},
+					directionX: plusOrMinus(),
+					directionY: plusOrMinus(),
+					speed: speed
+				};
+
+				elements.push(square);
+
+				queue--;
+			}
+
+			//animate all elements
+			elements.forEach(moveElement);
+
+			requestAnimationFrame(animate);
+		}
+
+		requestAnimationFrame(animate);
+		/* end animation */
+
+		/* begin fasterclick */
+		var element = document.body;
+
+		var anticlick = 0;
+
+		function spawnSquare () {
+			queue++;
+			displayCount(1);
+		}
+
+		function handle_touchstart (event) {
+			spawnSquare();
+
+			anticlick++;
+		}
+
+		function handle_click (event) {
+			if (anticlick > 0) {
+				anticlick--;
+			} else {
+				spawnSquare();
+			}
+		}
+
+		element.addEventListener('touchstart', handle_touchstart);
+		element.addEventListener('click', handle_click);
+		/* end fasterclick */
+
+		function handle_keydown (event) {
+			var key = event.keyCode;
+			if (key === 32) { //Spacebar
+				spawnSquare();
+			}
+		}
+		element.addEventListener('keydown', handle_keydown);
+	</script>
+</body>
+</html>
