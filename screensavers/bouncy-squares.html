@@ -27,6 +27,7 @@
 			position: fixed;
 			right: 0;
 			top: 0;
+			z-index: 2;
 		}
 
 	</style>
@@ -40,12 +41,30 @@
 		//prevent touch scrolling
 		document.ontouchmove = function (event) { event.preventDefault(); };
 
+		/* begin animation */
+		function SquareElement (color, positionX, positionY) {
+			var element = document.createElement('div');
+
+//			element.style.boxShadow = '';
+
+			return element;
+		}
+
+		function randomInRange (min, max) {
+			return Math.round(Math.random() * (max - min) + min);
+		}
+
+		function randomColor () {
+			return '#' + randomInRange(0, 0xffffff).toString(16);
+		}
+
 		var queue = 1;
 		var elements = [];
 
 		function animate (time) {
 			if (queue > 0) {
-				//add new element with random speed and color attributes
+				//add new element with randomized attributes: speed, color, positionX, positionY, directionX, DirectionY
+
 
 				queue--;
 			}
@@ -55,7 +74,36 @@
 			requestAnimationFrame(animate);
 		}
 
-		requestAnimationFrame(animate);
+//		requestAnimationFrame(animate);
+		/* end animation */
+
+		/* begin fasterclick */
+		var element = document.body;
+
+		var anticlick = 0;
+
+		function spawn () {
+			queue++;
+			alert(' queue: ' + queue + '\n anticlick: ' + anticlick); //debug
+		}
+
+		function handle_touchstart (event) {
+			spawn();
+
+			anticlick++;
+		}
+
+		function handle_click (event) {
+			if (anticlick > 0) {
+				anticlick--;
+			} else {
+				spawn();
+			}
+		}
+
+		element.addEventListener('touchstart', handle_touchstart);
+		element.addEventListener('click', handle_click);
+		/* end fasterclick */
 	</script>
 </body>
 </html>
