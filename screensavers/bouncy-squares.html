@@ -98,9 +98,11 @@
 		}
 
 		function randomMiniHexColor () {
+			//NOTE: will not return #000 (for visibility)
 			var r = randomInRange(1, 0xf).toString(16);
 			var g = randomInRange(1, 0xf).toString(16);
 			var b = randomInRange(1, 0xf).toString(16);
+
 			return '#' + r + g + b;
 		}
 
