@@ -28,6 +28,16 @@
 			position: fixed;
 			right: 0;
 			top: 0;
+			z-index: 3;
+		}
+
+		.fps {
+			color: darkgrey;
+			font-family: monospace;
+			left: 0;
+			padding: 0.5em;
+			position: fixed;
+			top: 0;
 			z-index: 2;
 		}
 
@@ -39,6 +49,8 @@
 	<a href="http://git.io/screensavers" class="nav">git.io/screensavers</a>
 	<!--TODO: add *click* message overlay that (maybe) dissapears on first click-->
 
+	<span id="fps" class="fps">0 fps</span>
+
 	<script>
 		'use strict';
 
@@ -46,6 +58,12 @@
 		document.ontouchmove = function (event) { event.preventDefault(); };
 
 		/* begin animation */
+
+		var $fps = document.getElementById('fps');
+
+		function displayFps (fps) {
+			$fps.innerHTML = Math.round(fps) + ' fps';
+		}
 
 		//diameter of square
 		var square_size = 32;
@@ -102,9 +120,13 @@
 			//TODO: calculate and move obj.element (etc)
 		}
 
+		var previous_time = 0;
+
 		function animate (time) {
+			displayFps(1000 / (time - previous_time));
+			previous_time = time;
+
 			if (queue > 0) {
-				//add new element with randomized attributes: speed, color, positionX, positionY, directionX, DirectionY, speed
 				var color = randomColor();
 				var x = randomX();
 				var y = randomY();
