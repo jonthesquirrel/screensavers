@@ -73,7 +73,7 @@
 	</div>
 
 	<div class="info">
-		<span onclick="goFullscreen();">fullscreen</span>
+		<span onclick="toggleFullscreen();">fullscreen</span>
 	</div>
 
 	<script>
@@ -82,9 +82,11 @@
 		//prevent touch scrolling
 		document.ontouchmove = function (event) { event.preventDefault(); };
 
-		function goFullscreen () {
+		function toggleFullscreen () {
 			//TODO: add more vendor prefixes
 			document.body.webkitRequestFullscreen();
+
+			//FUTURE: exit fullscreen if already in fullscreen
 		}
 
 		/* begin animation */
