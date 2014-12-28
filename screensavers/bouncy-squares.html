@@ -37,7 +37,25 @@
 	<script>
 		'use strict';
 
+		//prevent touch scrolling
 		document.ontouchmove = function (event) { event.preventDefault(); };
+
+		var queue = 1;
+		var elements = [];
+
+		function animate (time) {
+			if (queue > 0) {
+				//add new element with random speed and color attributes
+
+				queue--;
+			}
+
+			//animate all elements
+
+			requestAnimationFrame(animate);
+		}
+
+		requestAnimationFrame(animate);
 	</script>
 </body>
 </html>
