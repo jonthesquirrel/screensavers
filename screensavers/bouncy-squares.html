@@ -97,8 +97,11 @@
 			return Math.round(Math.random() * (max - min) + min);
 		}
 
-		function randomColor () {
-			return '#' + randomInRange(0, 0xffffff).toString(16);
+		function randomMiniHexColor () {
+			var r = randomInRange(1, 0xf).toString(16);
+			var g = randomInRange(1, 0xf).toString(16);
+			var b = randomInRange(1, 0xf).toString(16);
+			return '#' + r + g + b;
 		}
 
 		function maxX () {
@@ -135,7 +138,7 @@
 			previous_time = time;
 
 			if (queue > 0) {
-				var color = randomColor();
+				var color = randomMiniHexColor();
 				var x = randomX();
 				var y = randomY();
 				var speed = randomInRange(square_speed.min, square_speed.max);
