@@ -129,8 +129,21 @@
 		var queue = 1;
 		var elements = [];
 
-		function moveElement (obj, index, arr) {
-			console.log(obj);
+		function moveElement (square, index, arr) {
+			//reverse direction when at or beyond edge of screen
+			if (square.positionX > maxX()) { square.directionX = '-'; }
+			if (square.positionX < 0) { square.directionX = '+'; }
+			if (square.positionY > maxY()) { square.directionY = '-'; }
+			if (square.positionY < 0) { square.directionY = '+'; }
+
+			//move square according to its direction and speed
+			if (square.directionX === '+') { square.positionX += square.speed; }
+			if (square.directionX === '-') { square.positionX -= square.speed; }
+			if (square.directionY === '+') { square.positionY += square.speed; }
+			if (square.directionY === '-') { square.positionY -= square.speed; }
+
+			//render new position
+			square.updatePosition();
 		}
 
 		var previous_time = 0;
@@ -145,14 +158,12 @@
 				var y = randomY();
 				var speed = randomInRange(square_speed.min, square_speed.max);
 
-				var obj = {
+				var square = {
 					element: SquareElement(color, x, y),
 					positionX: x,
 					positionY: y,
-					updateX: function () {
+					updatePosition: function () {
 						this.element.style.left = this.positionX + 'px';
-					},
-					updateY: function () {
 						this.element.style.top = this.positionY + 'px';
 					},
 					directionX: plusOrMinus(),
@@ -160,7 +171,7 @@
 					speed: speed
 				};
 
-				elements.push(obj);
+				elements.push(square);
 
 				queue--;
 			}
@@ -168,7 +179,7 @@
 			//animate all elements
 			elements.forEach(moveElement);
 
-//			requestAnimationFrame(animate);
+			requestAnimationFrame(animate);
 		}
 
 		requestAnimationFrame(animate);
