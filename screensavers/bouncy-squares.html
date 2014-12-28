@@ -211,6 +211,14 @@
 		element.addEventListener('touchstart', handle_touchstart);
 		element.addEventListener('click', handle_click);
 		/* end fasterclick */
+
+		function handle_keydown (event) {
+			var key = event.keyCode;
+			if (key === 32) { //Spacebar
+				spawnSquare();
+			}
+		}
+		element.addEventListener('keydown', handle_keydown);
 	</script>
 </body>
 </html>
