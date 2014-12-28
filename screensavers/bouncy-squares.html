@@ -32,13 +32,26 @@
 		}
 
 		.status {
-			color: darkgrey;
+			color: darkgray;
 			font-family: monospace;
 			left: 0;
 			padding: 0.5em;
 			position: fixed;
 			top: 0;
 			z-index: 2;
+		}
+
+		.info {
+			bottom: 0;
+			color: darkgray;
+			cursor: pointer;
+			font-family: fantasy;
+			left: 0;
+			margin-bottom: 1em;
+			position: fixed;
+			text-align: center;
+			text-decoration: underline;
+			width: 100%;
 		}
 
 		.noselect {
@@ -52,7 +65,6 @@
 </head>
 <body class="noselect">
 	<a href="http://git.io/screensavers" class="nav">git.io/screensavers</a>
-	<!--TODO: add *click* message overlay that (maybe) dissapears on first click-->
 
 	<div class="status">
 		<span id="fps">0 fps</span>
@@ -60,11 +72,20 @@
 		<span id="count">1 square</span>
 	</div>
 
+	<div class="info">
+		<span onclick="goFullscreen();">fullscreen</span>
+	</div>
+
 	<script>
 		'use strict';
 
 		//prevent touch scrolling
 		document.ontouchmove = function (event) { event.preventDefault(); };
+
+		function goFullscreen () {
+			//TODO: add more vendor prefixes
+			document.body.webkitRequestFullscreen();
+		}
 
 		/* begin animation */
 
