@@ -69,7 +69,7 @@
 <body class="noselect">
 	<a href="http://git.io/screensavers" class="nav">git.io/screensavers</a>
 
-	<div class="status">
+	<div class="status" id="status">
 		<span id="fps">0 fps</span>
 		<br>
 		<span id="count">1 square</span><span> (click to spawn more)</span>
@@ -152,6 +152,7 @@
 		var $fps = document.getElementById('fps');
 		var $count = document.getElementById('count');
 		var $fullscreen = document.getElementById('fullscreen');
+		var $status = document.getElementById('status');
 
 		//prevent touch scrolling
 		document.ontouchmove = function (event) { event.preventDefault(); };
@@ -377,7 +378,7 @@
 			var elm = document.createElement('span');
 			elm.innerHTML = 'HYPER MODE';
 			elm.style.color = 'red';
-			document.getElementsByClassName('status')[0].appendChild(elm);
+			$status.appendChild(elm);
 
 			requestAnimationFrame(HYPER_MODE);
 		}
