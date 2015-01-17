@@ -160,17 +160,15 @@
 		/* begin fullscreen */
 		/* polyfills from http://www.sitepoint.com/use-html5-full-screen-api */
 
-		function enterFullscreen () {
-			var i = document.body;
-
-			if (i.requestFullscreen) {
-				i.requestFullscreen();
-			} else if (i.webkitRequestFullscreen) {
-				i.webkitRequestFullscreen();
-			} else if (i.mozRequestFullScreen) {
-				i.mozRequestFullScreen();
-			} else if (i.msRequestFullscreen) {
-				i.msRequestFullscreen();
+		function enterFullscreen (element) {
+			if (element.requestFullscreen) {
+				element.requestFullscreen();
+			} else if (element.webkitRequestFullscreen) {
+				element.webkitRequestFullscreen();
+			} else if (element.mozRequestFullScreen) {
+				element.mozRequestFullScreen();
+			} else if (element.msRequestFullscreen) {
+				element.msRequestFullscreen();
 			}
 		}
 
@@ -199,15 +197,19 @@
 			return false;
 		}
 
-		function toggleFullscreen () {
+		function toggleFullscreen (element) {
 			if (isFullscreen()) {
 				leaveFullscreen();
 			} else {
-				enterFullscreen();
+				enterFullscreen(element);
 			}
 		}
 
-		$fullscreen.addEventListener('click', toggleFullscreen);
+		function fullscreenUI () {
+			toggleFullscreen(document.body);
+		}
+
+		$fullscreen.addEventListener('click', fullscreenUI);
 
 		/* end fullscreen */
 
@@ -339,7 +341,14 @@
 		/* end animation */
 
 		/* begin fasterclick */
-		var element = document.body;
+		var $clicktarget_spawnsquare = document.body;
+
+		function handler_spawnSquare (event) {
+			var target = event.target;
+			if (target === $clicktarget_spawnsquare) {
+				spawnSquare();
+			}
+		}
 
 		var anticlick = 0;
 
@@ -349,8 +358,7 @@
 		}
 
 		function handle_touchstart (event) {
-			spawnSquare();
-
+			handler_spawnSquare(event);
 			anticlick++;
 		}
 
@@ -358,12 +366,12 @@
 			if (anticlick > 0) {
 				anticlick--;
 			} else {
-				spawnSquare();
+				handler_spawnSquare(event);
 			}
 		}
 
-		element.addEventListener('touchstart', handle_touchstart);
-		element.addEventListener('click', handle_click);
+		$clicktarget_spawnsquare.addEventListener('touchstart', handle_touchstart);
+		$clicktarget_spawnsquare.addEventListener('click', handle_click);
 		/* end fasterclick */
 
 		/* begin konami */
@@ -411,7 +419,7 @@
 			checkKonami(key);
 		}
 
-		element.addEventListener('keydown', handle_keydown);
+		window.addEventListener('keydown', handle_keydown);
 
 		/* end konami */
 	</script>
