@@ -206,7 +206,9 @@
 		}
 
 		function fullscreenUI () {
-			toggleFullscreen(document.body);
+			//webkit "half body in fullscreen" bug workaround (click target area)
+			//use document.head instead of document.body
+			toggleFullscreen(document.head);
 		}
 
 		$fullscreen.addEventListener('click', fullscreenUI);
