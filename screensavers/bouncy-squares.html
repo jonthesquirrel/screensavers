@@ -237,6 +237,10 @@
 			max: 10
 		};
 
+		function handleRemove (event) {
+			event.target.parentNode.removeChild(event.target);
+		}
+
 		function SquareElement (color, positionX, positionY) {
 			var element = document.createElement('div');
 
@@ -246,6 +250,9 @@
 			element.style.left = positionX + 'px';
 			element.style.top = positionY + 'px';
 			element.style.boxShadow = 'inset 0 0 0 ' + (square_size / 4) + 'px ' + color;
+
+			//click on squares to remove them
+			Fasterclick.attach(element, handleRemove);
 
 			document.body.appendChild(element);
 
@@ -346,6 +353,7 @@
 
 		/* begin click listeners */
 
+		//click on <body> to spawn squares
 		var $spawnsquare_clicktarget = document.body;
 
 		function spawnSquare () {
@@ -361,9 +369,6 @@
 		}
 
 		Fasterclick.attach($spawnsquare_clicktarget, spawnsquare_handler);
-
-		//FUTURE: click on squares to remove them
-
 
 		/* end click listeners */
 
