@@ -65,6 +65,8 @@
 		}
 
 	</style>
+
+	<script src="../resources/fasterclick.js"></script>
 </head>
 <body class="noselect">
 	<a href="http://git.io/screensavers" class="nav">git.io/screensavers</a>
@@ -342,39 +344,28 @@
 		requestAnimationFrame(animate);
 		/* end animation */
 
-		/* begin fasterclick */
-		var $clicktarget_spawnsquare = document.body;
+		/* begin click listeners */
 
-		function handler_spawnSquare (event) {
-			var target = event.target;
-			if (target === $clicktarget_spawnsquare) {
-				spawnSquare();
-			}
-		}
-
-		var anticlick = 0;
+		var $spawnsquare_clicktarget = document.body;
 
 		function spawnSquare () {
 			queue++;
 			displayCount(1);
 		}
 
-		function handle_touchstart (event) {
-			handler_spawnSquare(event);
-			anticlick++;
-		}
-
-		function handle_click (event) {
-			if (anticlick > 0) {
-				anticlick--;
-			} else {
-				handler_spawnSquare(event);
+		function spawnsquare_handler (event) {
+			var target = event.target;
+			if (target === $spawnsquare_clicktarget) {
+				spawnSquare();
 			}
 		}
 
-		$clicktarget_spawnsquare.addEventListener('touchstart', handle_touchstart);
-		$clicktarget_spawnsquare.addEventListener('click', handle_click);
-		/* end fasterclick */
+		Fasterclick.attach($spawnsquare_clicktarget, spawnsquare_handler);
+
+		//FUTURE: click on squares to remove them
+
+
+		/* end click listeners */
 
 		/* begin konami */
 
