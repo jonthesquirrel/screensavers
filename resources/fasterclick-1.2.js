@@ -1,6 +1,6 @@
 /* Copyright (c) 2015 Jonathan Herman. MIT License. */
 /* https://github.com/jdh11235/fasterclick */
-/* Fasterclick 1.1 */
+/* Fasterclick 1.2 */
 
 (function(){
 	'use strict';
@@ -34,6 +34,7 @@
 		},
 
 		cancel: function(uid) {
+			//safety check to avoid calling null
 			if (Fasterclick.cache.exists[uid]) {
 				Fasterclick.cache.exists[uid] = false;
 
@@ -42,10 +43,10 @@
 
 				//remove references
 				Fasterclick.cache.callback[uid] = null;
-				Fasterclick.cache.touch_queue[uid] = null;
+				Fasterclick.cache.click_handler[uid] = null;
 				Fasterclick.cache.element[uid] = null;
 				Fasterclick.cache.touch_handler[uid] = null;
-				Fasterclick.cache.click_handler[uid] = null;
+				Fasterclick.cache.touch_queue[uid] = null;
 
 				return true;
 			} else {
@@ -53,7 +54,7 @@
 			}
 		},
 
-		//callbacks (user's event handler function)
+		//callbacks (from user)
 
 		//send touch event
 		touchWrapper: function(event, uid) {
