@@ -7,13 +7,15 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
-	<title>anagram - screensaver</title>
+	<title>Anagram • screensaver</title>
 
 <style>
 
 	body {
+		padding-top: 2.5em;
+
 		font-family: sans-serif;
-		padding-top: 2em;
+		background: #f9f9f9;
 	}
 
 	.header {
@@ -21,6 +23,7 @@
 		top: 0;
 		padding: 0.25em;
 		text-align: center;
+		font-size: 1.25em;
 
 		background: black;
 		color: white;
@@ -48,17 +51,19 @@
 	.middle {
 		z-index: 100;
 		position: fixed;
-		bottom: 50%;
+		top: 50%;
 		text-align: center;
 		left: 50%;
-		transform: translateX(-50%);
+
+		-webkit-transform: translate(-50%, -50%);
+		transform: translate(-50%, -50%);
 	}
 
 </style>
 </head>
 <body>
 
-	<span class="topleft"></span>
+	<span class="header topleft"></span>
 
 	<div class="header topmiddle">
 		Anagram
@@ -127,7 +132,6 @@ window.addEventListener('load', function () { 'use strict';
 
 		elm.style.padding = '0.5em';
 		elm.style.color = randomColor();
-
 
 		//adding a space fixes the layout issue (lines not wrapping)
 		elm.innerText = ' ' + word;
