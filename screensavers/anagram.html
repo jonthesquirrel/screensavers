@@ -9,23 +9,27 @@
 
 	<title>anagram - screensaver</title>
 
-	<style>
+<style>
 
+.middle {
+	position: fixed;
+	bottom: 50%;
+	text-align: center;
+	left: 50%;
+	transform: translateX(-50%);
 
-
-	</style>
+</style>
 </head>
 <body>
 
-
+	<input type="text" class="middle" id="wordbox">
 
 <script>
 (function(){ 'use strict';
 
-//test
+//elements
 
-var x = 1;
-window.y = 2;
+var $wordbox = document.getElementById('wordbox');
 
 //init
 
