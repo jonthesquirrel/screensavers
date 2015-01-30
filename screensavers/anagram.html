@@ -35,11 +35,27 @@
 <script>
 window.addEventListener('load', function () { 'use strict';
 
+	//sugar
+
+	var rgb = function (r, g, b) {
+		return 'rgb(' + r + ', ' + g + ', ' + b + ')';
+	};
+
+	//random
+
 	String.prototype.randomAnagram = function () {
 		return this.split('').sort(function () {
 			return 0.5 - Math.random();
 		}).join('');
-	}
+	};
+
+	var randomInRange = function (min, max) {
+		return Math.round(Math.random() * (max - min) + min);
+	};
+
+	var randomColor = function () {
+		return rgb(randomInRange(0, 255), randomInRange(0, 255), randomInRange(0, 255));
+	};
 
 	//elements
 
@@ -53,15 +69,27 @@ window.addEventListener('load', function () { 'use strict';
 
 	//animation
 
+	//TODO
 	var animate = function () {
-		//TODO
-		console.log(word.randomAnagram());
+		document.body.appendChild(wordContainerElement(word.randomAnagram()));
 	};
 
 	var loopAnimate = function () {
 		//respond instantly instead of initial delay
 		animate();
-		setInterval(animate, 500);
+		setInterval(animate, 100);
+	};
+
+	//DOM
+
+	var wordContainerElement = function(word) {
+		var elm = document.createElement('span');
+
+		elm.style.padding = '0.5em';
+		elm.style.color = randomColor();
+		elm.innerText = word;
+
+		return elm;
 	};
 
 	//UI
