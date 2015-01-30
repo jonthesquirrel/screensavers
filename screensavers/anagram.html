@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<!-- Copyright (c) 2014 Jonathan Herman - MIT License -->
+<!-- https://github.com/jdh11235/screensavers -->
+
+<html lang="en">
+	<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+	<title>anagram - screensaver</title>
+
+<style>
+
+	body {
+		font-family: sans-serif;
+		padding-top: 2em;
+	}
+
+	.header {
+		position: fixed;
+		top: 0;
+		padding: 0.25em;
+		text-align: center;
+
+		background: black;
+		color: white;
+		font-family: cursive;
+	}
+
+	.topmiddle {
+		z-index: 2;
+		left: 0;
+		width: 100%;
+	}
+
+	.topleft {
+		z-index: 3;
+		left: 0;
+		padding-left: 0.5em;
+	}
+
+	.topright {
+		z-index: 4;
+		right: 0;
+		padding-right: 0.5em;
+	}
+
+	.middle {
+		z-index: 100;
+		position: fixed;
+		bottom: 50%;
+		text-align: center;
+		left: 50%;
+		transform: translateX(-50%);
+	}
+
+</style>
+</head>
+<body>
+
+	<span class="topleft"></span>
+
+	<div class="header topmiddle">
+		Anagram
+	</div>
+
+	<a href="http://git.io/screensavers" class="header topright">git.io/screensavers</a>
+
+	<div id="splashscreen" class="middle">
+		<input type="text" id="wordbox" placeholder="type a word">
+		<button id="activatebutton">Anagram</button>
+	</div>
+
+<script>
+window.addEventListener('load', function () { 'use strict';
+
+	//sugar
+
+	var rgb = function (r, g, b) {
+		return 'rgb(' + r + ', ' + g + ', ' + b + ')';
+	};
+
+	//random
+
+	String.prototype.randomAnagram = function () {
+		return this.split('').sort(function () {
+			return 0.5 - Math.random();
+		}).join('');
+	};
+
+	var randomInRange = function (min, max) {
+		return Math.round(Math.random() * (max - min) + min);
+	};
+
+	var randomColor = function () {
+		return rgb(randomInRange(0, 255), randomInRange(0, 255), randomInRange(0, 255));
+	};
+
+	//elements
+
+	var $wordbox = document.getElementById('wordbox');
+	var $activatebutton = document.getElementById('activatebutton');
+	var $splashscreen = document.getElementById('splashscreen');
+
+	//placeholders
+
+	var word;
+
+	//animation
+
+	//TODO: auto-scrolling (if scrolled down all the way)
+
+	var animate = function () {
+		document.body.appendChild(wordContainerElement(word.randomAnagram()));
+	};
+
+	var loopAnimate = function () {
+		//respond instantly instead of initial delay
+		animate();
+		setInterval(animate, 100);
+	};
+
+	//DOM
+
+	var wordContainerElement = function(word) {
+		var elm = document.createElement('span');
+
+		elm.style.padding = '0.5em';
+		elm.style.color = randomColor();
+
+
+		//adding a space fixes the layout issue (not wrapping)
+		elm.innerText = ' ' + word;
+
+		return elm;
+	};
+
+	//UI
+
+	var removeSplash = function () {
+		$splashscreen.parentNode.removeChild($splashscreen);
+	};
+
+	//activate
+
+	var activate = function () {
+		if ($wordbox.value) {
+			word = $wordbox.value;
+			removeSplash();
+			loopAnimate();
+		}
+	};
+
+	$wordbox.addEventListener('keydown', function (event) {
+		//the Enter key
+		if (event.keyCode === 13) {
+			activate();
+		}
+	});
+
+	$activatebutton.addEventListener('click', activate);
+
+});
+</script>
+</body>
+</html>
