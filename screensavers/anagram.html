@@ -13,9 +13,40 @@
 
 	body {
 		font-family: sans-serif;
+		padding-top: 2em;
+	}
+
+	.header {
+		position: fixed;
+		top: 0;
+		padding: 0.25em;
+		text-align: center;
+
+		background: black;
+		color: white;
+		font-family: cursive;
+	}
+
+	.topmiddle {
+		z-index: 2;
+		left: 0;
+		width: 100%;
+	}
+
+	.topleft {
+		z-index: 3;
+		left: 0;
+		padding-left: 0.5em;
+	}
+
+	.topright {
+		z-index: 4;
+		right: 0;
+		padding-right: 0.5em;
 	}
 
 	.middle {
+		z-index: 100;
 		position: fixed;
 		bottom: 50%;
 		text-align: center;
@@ -26,6 +57,14 @@
 </style>
 </head>
 <body>
+
+	<span class="topleft"></span>
+
+	<div class="header topmiddle">
+		Anagram
+	</div>
+
+	<a href="http://git.io/screensavers" class="header topright">git.io/screensavers</a>
 
 	<div id="splashscreen" class="middle">
 		<input type="text" id="wordbox" placeholder="type a word">
@@ -69,7 +108,8 @@ window.addEventListener('load', function () { 'use strict';
 
 	//animation
 
-	//TODO
+	//TODO: auto-scrolling (if scrolled down all the way)
+
 	var animate = function () {
 		document.body.appendChild(wordContainerElement(word.randomAnagram()));
 	};
@@ -87,7 +127,10 @@ window.addEventListener('load', function () { 'use strict';
 
 		elm.style.padding = '0.5em';
 		elm.style.color = randomColor();
-		elm.innerText = word;
+
+
+		//adding a space fixes the layout issue (not wrapping)
+		elm.innerText = ' ' + word;
 
 		return elm;
 	};
