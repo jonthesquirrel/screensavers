@@ -11,39 +11,53 @@
 
 <style>
 
-.middle {
-	position: fixed;
-	bottom: 50%;
-	text-align: center;
-	left: 50%;
-	transform: translateX(-50%);
+	.middle {
+		position: fixed;
+		bottom: 50%;
+		text-align: center;
+		left: 50%;
+		transform: translateX(-50%);
+	}
 
 </style>
 </head>
 <body>
 
-	<input type="text" class="middle" id="wordbox">
+	<div class="middle">
+		<input type="text" id="wordbox">
+		<button id="activatebutton">Anagram</button>
+	</div>
 
 <script>
-(function(){ 'use strict';
+window.addEventListener('load', function () { 'use strict';
 
-String.prototype.randomAnagram = function () {
-	return this.split('').sort(function(){
-		return 0.5 - Math.random();
+	String.prototype.randomAnagram = function () {
+		return this.split('').sort(function () {
+			return 0.5 - Math.random();
+		});
+	}
+
+	//elements
+
+	var $wordbox = document.getElementById('wordbox');
+	var $activatebutton = document.getElementById('activatebutton');
+
+	//activate
+
+	var activate = function () {
+		console.log($wordbox.value);
+	};
+
+	$wordbox.addEventListener('keydown', function (event) {
+		//the Enter key
+		if (event.keyCode === 13) {
+			activate();
+		}
 	});
-}
 
-//elements
+	$activatebutton.addEventListener('click', activate);
 
-var $wordbox = document.getElementById('wordbox');
-
-//init
-
-window.addEventListener('load', function(){
-	console.log('test');
-} );
-
-})();
+});
 </script>
 </body>
 </html>
