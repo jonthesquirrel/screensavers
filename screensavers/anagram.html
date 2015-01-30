@@ -11,6 +11,10 @@
 
 <style>
 
+	body {
+		font-family: sans-serif;
+	}
+
 	.middle {
 		position: fixed;
 		bottom: 50%;
@@ -23,8 +27,8 @@
 </head>
 <body>
 
-	<div class="middle">
-		<input type="text" id="wordbox">
+	<div id="splashscreen" class="middle">
+		<input type="text" id="wordbox" placeholder="type a word">
 		<button id="activatebutton">Anagram</button>
 	</div>
 
@@ -41,6 +45,7 @@ window.addEventListener('load', function () { 'use strict';
 
 	var $wordbox = document.getElementById('wordbox');
 	var $activatebutton = document.getElementById('activatebutton');
+	var $splashscreen = document.getElementById('splashscreen');
 
 	//placeholders
 
@@ -50,7 +55,7 @@ window.addEventListener('load', function () { 'use strict';
 
 	var animate = function () {
 		//TODO
-		document.writeln(word.randomAnagram());
+		console.log(word.randomAnagram());
 	};
 
 	var loopAnimate = function () {
@@ -59,11 +64,20 @@ window.addEventListener('load', function () { 'use strict';
 		setInterval(animate, 500);
 	};
 
+	//UI
+
+	var removeSplash = function () {
+		$splashscreen.parentNode.removeChild($splashscreen);
+	};
+
 	//activate
 
 	var activate = function () {
-		word = $wordbox.value;
-		loopAnimate();
+		if ($wordbox.value) {
+			word = $wordbox.value;
+			removeSplash();
+			loopAnimate();
+		}
 	};
 
 	$wordbox.addEventListener('keydown', function (event) {
