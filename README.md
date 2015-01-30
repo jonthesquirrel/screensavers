@@ -1,8 +1,6 @@
 HTML5 screensavers
 ===
 
-Mindlessly stare at your screen for hours.
-
 [git.io/screensavers](http://git.io/screensavers)
 ===
 
