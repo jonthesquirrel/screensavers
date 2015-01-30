@@ -112,12 +112,12 @@ window.addEventListener('load', function () { 'use strict';
 	//placeholders
 
 	var word;
+	var last_scroll;
 
 	//animation
 
-	//TODO: auto-scrolling (if scrolled down all the way)
-
 	var animate = function () {
+		autoScroll();
 		document.body.appendChild(wordContainerElement(word.randomAnagram()));
 	};
 
@@ -145,6 +145,16 @@ window.addEventListener('load', function () { 'use strict';
 
 	var removeSplash = function () {
 		$splashscreen.parentNode.removeChild($splashscreen);
+	};
+
+	var autoScroll = function () {
+		//if scrolled to bottom of page, auto scroll
+		if (window.scrollY + window.innerHeight === document.body.scrollHeight) {
+			last_scroll = true;
+		} else if (last_scroll) {
+			window.scrollTo(0, Infinity);
+			last_scroll = false;
+		}
 	};
 
 	//activate
