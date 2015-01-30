@@ -9,8 +9,6 @@
 
 	<title>Bouncy Squares • screensaver</title>
 
-	<script src="../resources/fasterclick-1.2.js"></script>
-
 	<style>
 
 		body {
@@ -317,7 +315,7 @@
 		var square_count = 1;
 		function updateCount (increment) {
 			square_count += increment;
-			$count.innerHTML = square_count + ' squares';
+			$count.innerHTML = square_count + (square_count === 1 ? ' square' : ' squares');
 		}
 
 		//diameter of square
