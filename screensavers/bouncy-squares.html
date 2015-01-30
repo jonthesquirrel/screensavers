@@ -315,7 +315,7 @@
 		}
 
 		var square_count = 1;
-		function displayCount (increment) {
+		function updateCount (increment) {
 			square_count += increment;
 			$count.innerHTML = square_count + ' squares';
 		}
@@ -330,6 +330,7 @@
 
 		function handleRemove (event) {
 			event.target.parentNode.removeChild(event.target);
+			updateCount(-1);
 		}
 
 		function SquareElement (color, positionX, positionY) {
@@ -449,7 +450,7 @@
 
 		function spawnSquare () {
 			queue++;
-			displayCount(1);
+			updateCount(1);
 		}
 
 		function spawnsquare_handler (event) {
