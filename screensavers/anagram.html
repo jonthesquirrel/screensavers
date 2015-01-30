@@ -34,7 +34,7 @@ window.addEventListener('load', function () { 'use strict';
 	String.prototype.randomAnagram = function () {
 		return this.split('').sort(function () {
 			return 0.5 - Math.random();
-		});
+		}).join('');
 	}
 
 	//elements
@@ -42,10 +42,28 @@ window.addEventListener('load', function () { 'use strict';
 	var $wordbox = document.getElementById('wordbox');
 	var $activatebutton = document.getElementById('activatebutton');
 
+	//placeholders
+
+	var word;
+
+	//animation
+
+	var animate = function () {
+		//TODO
+		document.writeln(word.randomAnagram());
+	};
+
+	var loopAnimate = function () {
+		//respond instantly instead of initial delay
+		animate();
+		setInterval(animate, 500);
+	};
+
 	//activate
 
 	var activate = function () {
-		console.log($wordbox.value);
+		word = $wordbox.value;
+		loopAnimate();
 	};
 
 	$wordbox.addEventListener('keydown', function (event) {
