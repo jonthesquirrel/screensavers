@@ -81,19 +81,39 @@
 <script>
 window.addEventListener('load', function () { 'use strict';
 
+	//preferences
+
+	window.prefs = {
+		capitalize: true
+	};
+
 	//sugar
 
 	var rgb = function (r, g, b) {
 		return 'rgb(' + r + ', ' + g + ', ' + b + ')';
 	};
 
-	//random
+	//string utils
 
 	String.prototype.randomAnagram = function () {
 		return this.split('').sort(function () {
 			return 0.5 - Math.random();
 		}).join('');
 	};
+
+	String.prototype.toTitleCase = function () {
+		var str = this;
+		var newStr = '';
+
+		var words = str.split(' ');
+		for (var i = 0; i < words.length; i++) {
+			newStr += ' ' + words[i].slice(0, 1).toUpperCase() + words[i].slice(1).toLowerCase();
+		}
+
+		return newStr.trim();
+	};
+
+	//randomizers
 
 	var randomInRange = function (min, max) {
 		return Math.round(Math.random() * (max - min) + min);
@@ -114,11 +134,21 @@ window.addEventListener('load', function () { 'use strict';
 	var word;
 	var last_scroll;
 
+	//processors
+
+	var processWord = function (word) {
+		word = word.randomAnagram().trim();
+		if (prefs.capitalize) {
+			word = word.toTitleCase();
+		}
+		return word;
+	};
+
 	//animation
 
 	var animate = function () {
 		autoScroll();
-		document.body.appendChild(wordContainerElement(word.randomAnagram()));
+		document.body.appendChild(wordContainerElement(processWord(word)));
 	};
 
 	var loopAnimate = function () {
