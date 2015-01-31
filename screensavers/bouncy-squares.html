@@ -20,6 +20,10 @@
 			width: 100%;
 		}
 
+		a:hover, #fullscreen:hover {
+			color: skyblue;
+		}
+
 		.nav {
 /*			box-shadow: inset 0 0 0 0.5em darkgray;*/
 			color: darkgray;
@@ -318,6 +322,7 @@
 			$count.innerHTML = square_count + (square_count === 1 ? ' square' : ' squares');
 		}
 
+		//FUTURE: adjustable with slider?
 		//diameter of square
 		var square_size = 32;
 		//pixels travelled per frame
