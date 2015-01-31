@@ -69,7 +69,10 @@
 </head>
 <body>
 
-	<span class="header topleft"></span>
+	<div class="header topleft">
+		Number of words:
+		<input type="number" id="prefs_words">
+	</div>
 
 	<div class="header topmiddle" onclick="location.reload();">
 		Anagram
@@ -85,10 +88,56 @@
 <script>
 window.addEventListener('load', function () { 'use strict';
 
+	var init = function () {
+		prefs.init();
+		$prefs_words.value = prefs.get('words');
+	};
+
 	//preferences
 
 	window.prefs = {
-		capitalize: true
+
+		get: function (key) {
+			return localStorage[key];
+		},
+
+		set: function (key, value) {
+			if (prefs.check[key]) {
+				value = prefs.check[key](value);
+				localStorage[key] = value;
+				return value;
+			} else {
+				return false;
+			}
+		},
+
+		check: {
+
+			capitalize: function (b) {
+				//true or false
+				return (typeof b === 'boolean') ? b : prefs.defaults.capitalize;
+			},
+
+			words: function (n) {
+				//positive integer
+				return ((n % 2 === 1 || n % 2 === 0) && n > 0) ? n : prefs.defaults.words;
+			}
+
+		},
+
+		defaults: {
+
+			capitalize: true,
+			words: 1
+
+		},
+
+		init: function () {
+			for (var key in prefs.defaults) {
+				prefs.set(key, prefs.get(key));
+			}
+		}
+
 	};
 
 	//sugar
@@ -132,6 +181,7 @@ window.addEventListener('load', function () { 'use strict';
 	var $wordbox = document.getElementById('wordbox');
 	var $activatebutton = document.getElementById('activatebutton');
 	var $splashscreen = document.getElementById('splashscreen');
+	var $prefs_words = document.getElementById('prefs_words');
 
 	//placeholders
 
@@ -191,7 +241,7 @@ window.addEventListener('load', function () { 'use strict';
 		}
 	};
 
-	//activate
+	//event handlers
 
 	var activate = function () {
 		if ($wordbox.value) {
@@ -210,6 +260,13 @@ window.addEventListener('load', function () { 'use strict';
 
 	$activatebutton.addEventListener('click', activate);
 
+	$prefs_words.addEventListener('input', function (event) {
+		$prefs_words.value = prefs.set('words', $prefs_words.value);
+		console.log(event);
+	});
+
+	//must be called last
+	init();
 });
 </script>
 </body>
