@@ -12,7 +12,7 @@
 <style>
 
 	body {
-		padding-top: 2.5em;
+		padding-top: 3em;
 
 		font-family: sans-serif;
 		background: #f9f9f9;
@@ -26,8 +26,9 @@
 		position: fixed;
 		top: 0;
 		padding: 0.25em;
+		padding-bottom: 0.4em;
 		text-align: center;
-		font-size: 1.25em;
+		font-size: 1.3em;
 
 		background: black;
 		color: white;
@@ -42,16 +43,24 @@
 		cursor: pointer;
 	}
 
+	.topmiddle:hover {
+		text-decoration: underline;
+	}
+
 	.topleft {
 		z-index: 3;
 		left: 0;
 		padding-left: 0.5em;
+
+		background: transparent;
 	}
 
 	.topright {
 		z-index: 4;
 		right: 0;
 		padding-right: 0.5em;
+
+		background: transparent;
 	}
 
 	.middle {
@@ -70,8 +79,7 @@
 <body>
 
 	<div class="header topleft">
-		Number of words:
-		<input type="number" id="prefs_words">
+		Divide into <input type="text" id="prefs_words"  placeholder="1" tabindex="2"> words
 	</div>
 
 	<div class="header topmiddle" onclick="location.reload();">
@@ -81,10 +89,86 @@
 	<a href="../" class="header topright">git.io/screensavers</a>
 
 	<div id="splashscreen" class="middle">
-		<input type="text" id="wordbox" placeholder="type a word" autofocus>
+		<input type="text" id="wordbox" placeholder="type something" tabindex="1" autofocus>
 		<button id="activatebutton">Anagram</button>
 	</div>
 
+<script>
+/* Copyright (c) 2015 Jonathan Herman. MIT License. */
+/* https://github.com/jdh11235/algorithms */
+
+function randomlyPartition (n, p) {
+	//n: number to be partitioned
+	//p: number of partitions
+	//n and p must be positive integers
+	//n must be greater than or equal to p
+
+	function randomFromRange (min, max) {
+		return Math.round(Math.random() * (max - min) + min);
+	}
+
+	function isInteger (n) {
+		return (n % 2 === 0 || n % 2 === 1);
+	}
+
+	function shuffle (set) {
+		return set.sort(function () {
+			return 0.5 - Math.random();
+		});
+	}
+
+	function fork (n) {
+		var split = randomFromRange(1, n - 1);
+		return [split, n - split];
+	}
+
+	//test: n and p exist and are numbers
+	if ( !(!isNaN(n) && !isNaN(p)) ) {
+		return false;
+	}
+
+	//test: n and p are positive integers
+	if ( !(isInteger(n) && isInteger(p) && n > 0 && p > 0) ) {
+		return false;
+	}
+
+	//test: n is greater than or equal to p
+	if ( !(n >= p) ) {
+		return false;
+	}
+
+	var set = [n];
+	var subset;
+	var index;
+	var pos;
+	var forked;
+
+	//partition set recursively until set has p partitions
+	for (var i = 0, i2 = 0; i < p - 1; i++) {
+		subset = [];
+		index = [];
+
+		//filter into subset: numbers greater than 1 (because 1 can't be split into two positive integers)
+		for (i2 = 0; i2 < set.length; i2++) {
+			if (set[i2] > 1) {
+				subset.push(set[i2]);
+				index.push(i2);
+			}
+		}
+
+		//randomly select number from subset
+		pos = randomFromRange(0, subset.length - 1);
+
+		//randomly partition number into two parts
+		forked = fork(subset[pos]);
+
+		//replace number in set with the two resulting partitions of that number
+		set.splice(index[pos], 1, forked[0], forked[1]);
+	}
+
+	return shuffle(set);
+}
+</script>
 <script>
 window.addEventListener('load', function () { 'use strict';
 
@@ -146,9 +230,26 @@ window.addEventListener('load', function () { 'use strict';
 		return 'rgb(' + r + ', ' + g + ', ' + b + ')';
 	};
 
-	//string utils
+	//String utils
 
-	String.prototype.randomAnagram = function () {
+	//TODO: testing
+	String.prototype.randomlyPartition = function (divisions) {
+		var str = this;
+		if (divisions > str.length) { divisions = str.length }
+
+		var words = [];
+		var chunks = randomlyPartition(str.length, divisions);
+
+		var last_pos = 0;
+		for (var i = 0; i < divisions; i++) {
+			words[i] = str.slice(last_pos, last_pos + chunks[i]);
+			last_pos += chunks[i];
+		}
+
+		return words;
+	};
+
+	String.prototype.scramble = function () {
 		return this.split('').sort(function () {
 			return 0.5 - Math.random();
 		}).join('');
@@ -176,6 +277,10 @@ window.addEventListener('load', function () { 'use strict';
 		return rgb(randomInRange(0, 255), randomInRange(0, 255), randomInRange(0, 255));
 	};
 
+	var randomAnagram = function (str) {
+		return str.replace(/ /gi, '').scramble().randomlyPartition(prefs.get('words')).join(' ').toTitleCase();
+	};
+
 	//elements
 
 	var $wordbox = document.getElementById('wordbox');
@@ -191,7 +296,7 @@ window.addEventListener('load', function () { 'use strict';
 	//processors
 
 	var processWord = function (word) {
-		word = word.randomAnagram().trim();
+		word = randomAnagram(word);
 		if (prefs.capitalize) {
 			word = word.toTitleCase();
 		}
@@ -251,18 +356,31 @@ window.addEventListener('load', function () { 'use strict';
 		}
 	};
 
-	$wordbox.addEventListener('keydown', function (event) {
+	var enterKey = function (event, callback) {
 		//the Enter key
 		if (event.keyCode === 13) {
-			activate();
+			callback();
 		}
-	});
+	}
+
+	$wordbox.addEventListener('keydown', function(event) { enterKey(event, activate); });
+	$prefs_words.addEventListener('keydown', function(event) { enterKey(event, activate); });
 
 	$activatebutton.addEventListener('click', activate);
 
 	$prefs_words.addEventListener('input', function (event) {
-		$prefs_words.value = prefs.set('words', $prefs_words.value);
-		console.log(event);
+		if ($prefs_words.value === '') {
+			//placeholder value
+			prefs.set('words', 1);
+		} else {
+			$prefs_words.value = prefs.set('words', Number($prefs_words.value) );
+		}
+	});
+
+	$prefs_words.addEventListener('keydown', function (event) {
+		enterKey(event, function () {
+			$wordbox.focus();
+		});
 	});
 
 	//must be called last
