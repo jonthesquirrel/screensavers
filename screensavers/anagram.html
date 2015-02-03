@@ -447,10 +447,12 @@ window.addEventListener('load', function () { 'use strict';
 
 	var autoScroll = function () {
 		//if scrolled to bottom of page, auto scroll
-		if (window.scrollY + window.innerHeight === document.body.scrollHeight) {
+		var current_scroll = window.scrollY + window.innerHeight;
+//		if (current_scroll === document.body.scrollHeight) {
+		if (current_scroll >= document.body.scrollHeight - 1) {
 			last_scroll = true;
 		} else if (last_scroll) {
-			window.scrollTo(0, Infinity);
+			window.scrollTo(0, current_scroll * 2);
 			last_scroll = false;
 		}
 	};
