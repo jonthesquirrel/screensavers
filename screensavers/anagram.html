@@ -268,6 +268,17 @@ function randomlyPartition (n, p) {
 	});
 </script>
 <script>
+	/* .innerText FireFox fix */
+
+	function setText (element, text) {
+		if(document.all){
+			element.innerText = text;
+		} else{
+			element.textContent = text;
+		}
+	}
+</script>
+<script>
 window.addEventListener('load', function () { 'use strict';
 
 	var init = function () {
@@ -423,7 +434,7 @@ window.addEventListener('load', function () { 'use strict';
 		elm.style.color = randomColor();
 
 		//adding a space fixes the layout issue (lines not wrapping)
-		elm.innerText = ' ' + word;
+		setText(elm, ' ' + word);
 
 		return elm;
 	};
