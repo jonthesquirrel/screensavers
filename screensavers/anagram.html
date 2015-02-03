@@ -105,7 +105,7 @@
 		<button id="activatebutton">Anagram</button>
 	</div>
 
-	<span class="bottomcorner link" id="fullscreen">[Full Screen]</span>
+	<div class="bottomcorner link" id="fullscreen">[Full Screen]</div>
 
 <script>
 /* Copyright (c) 2015 Jonathan Herman. MIT License. */
@@ -269,7 +269,6 @@ function randomlyPartition (n, p) {
 </script>
 <script>
 	/* .innerText FireFox fix */
-
 	function setText (element, text) {
 		if(document.all){
 			element.innerText = text;
@@ -430,8 +429,9 @@ window.addEventListener('load', function () { 'use strict';
 	var wordContainerElement = function(word) {
 		var elm = document.createElement('span');
 
-		elm.style.padding = '0.5em';
 		elm.style.color = randomColor();
+		elm.style.padding = '0.4em';
+		elm.style.lineHeight = '1.5em';
 
 		//adding a space fixes the layout issue (lines not wrapping)
 		setText(elm, ' ' + word);
