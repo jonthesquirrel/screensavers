@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<!-- Copyright (c) 2014 Jonathan Herman - MIT License -->
+<!-- https://github.com/jdh11235/screensavers -->
+
+<html lang="en" manifest="../manifest.appcache">
+	<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+	<title>Stroop • screensaver</title>
+
+<style>
+
+	body {
+		padding-top: 3em;
+
+		font-family: sans-serif;
+		background: #f9f9f9;
+	}
+
+	a:hover {
+		color: skyblue;
+	}
+
+	.topmiddle {
+		z-index: 2;
+		left: 0;
+		width: 100%;
+	}
+
+	.link {
+		cursor: pointer;
+	}
+
+	.link:hover {
+		text-decoration: underline;
+	}
+
+	.bottomleft {
+		z-index: 4;
+		left: 0;
+		padding-right: 0.5em;
+
+		position: fixed;
+		bottom: 0;
+		padding: 0.25em;
+		text-align: center;
+		font-size: 1.3em;
+
+		background: black;
+		color: white;
+		font-family: cursive;
+		width: 100%;
+	}
+
+	.bottomright {
+		position: fixed;
+		bottom: 0;
+		right: 0;
+		padding: 0.5em;
+
+		background: #f9f9f9;
+		border: 0.25em solid black;
+		z-index: 5;
+	}
+
+</style>
+</head>
+<body>
+
+	<a href="../" class="header bottomleft">git.io/screensavers</a>
+
+	<div class="bottomright link" id="fullscreen">[Full Screen]</div>
+
+
+<script>
+	/* begin fullscreen polyfill from http://www.sitepoint.com/use-html5-full-screen-api */
+
+	function enterFullscreen (element) {
+		if (element.requestFullscreen) {
+			element.requestFullscreen();
+		} else if (element.webkitRequestFullscreen) {
+			element.webkitRequestFullscreen();
+		} else if (element.mozRequestFullScreen) {
+			element.mozRequestFullScreen();
+		} else if (element.msRequestFullscreen) {
+			element.msRequestFullscreen();
+		}
+	}
+
+	function leaveFullscreen () {
+		if (document.exitFullscreen) {
+			document.exitFullscreen();
+		} else if (document.webkitExitFullscreen) {
+			document.webkitExitFullscreen();
+		} else if (document.mozCancelFullScreen) {
+			document.mozCancelFullScreen();
+		} else if (document.msExitFullscreen) {
+			document.msExitFullscreen();
+		}
+	}
+
+	function isFullscreen () {
+		if (
+			document.fullscreenElement ||
+			document.webkitFullscreenElement ||
+			document.mozFullScreenElement ||
+			document.msFullscreenElement
+		) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/* end fullscreen polyfill */
+
+	var $fullscreen = document.getElementById('fullscreen');
+	var $UI = document.querySelectorAll('.header');
+
+	function hideUI () {
+		for (var i = 0; i < $UI.length; i++) {
+			$UI[i].setAttribute('hidden', '');
+		}
+	}
+
+	function showUI () {
+		for (var i = 0; i < $UI.length; i++) {
+			$UI[i].removeAttribute('hidden');
+		}
+	}
+
+	function toggleFullscreen () {
+		if (isFullscreen()) {
+			showUI();
+			leaveFullscreen();
+		} else {
+			hideUI();
+			enterFullscreen(document.head);
+		}
+	}
+
+	function correctUI () {
+		if (isFullscreen()) {
+			hideUI();
+		} else {
+			showUI();
+		}
+	}
+
+	document.addEventListener('fullscreenchange', correctUI);
+	document.addEventListener('mozfullscreenchange', correctUI);
+	document.addEventListener('MSFullscreenChange', correctUI);
+	document.addEventListener('webkitfullscreenchange', correctUI);
+
+	$fullscreen.addEventListener('click', function() {
+		toggleFullscreen();
+	});
+</script>
+<script>
+
+	//randomColor
+
+	var rgb = function (r, g, b) {
+		return 'rgb(' + r + ', ' + g + ', ' + b + ')';
+	};
+
+	var randomInRange = function (min, max) {
+		return Math.round(Math.random() * (max - min) + min);
+	};
+
+	var randomColor = function () {
+		return rgb(randomInRange(0, 255), randomInRange(0, 255), randomInRange(0, 255));
+	};
+
+	//DOM
+
+	var wordContainerElement = function(word) {
+		var elm = document.createElement('span');
+
+		elm.style.color = randomColor();
+		elm.style.padding = '0.4em';
+		elm.style.lineHeight = '1.5em';
+
+		//adding a space fixes the layout issue (lines not wrapping)
+		setText(elm, ' ' + word);
+
+		return elm;
+	};
+
+
+</script>
+</body>
+</html>
