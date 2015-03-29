@@ -37,9 +37,23 @@
 	}
 
 	.bottomleft {
+		z-index: 5;
+		left: 0;
+		padding-left: 0.5em;
+
+		position: fixed;
+		bottom: 0;
+		padding: 0.4em;
+		font-size: 1.3em;
+
+		background: transparent;
+		color: white;
+		font-family: sans-serif;
+	}
+
+	.bottomcenter {
 		z-index: 4;
 		left: 0;
-		padding-right: 0.5em;
 
 		position: fixed;
 		bottom: 0;
@@ -68,7 +82,9 @@
 </head>
 <body>
 
-	<a href="../" class="header bottomleft">git.io/screensavers</a>
+	<span class="bottomleft">Stroop Effect!</span>
+
+	<a href="../" class="header bottomcenter">git.io/screensavers</a>
 
 	<div class="bottomright link" id="fullscreen">[Full Screen]</div>
 
@@ -159,9 +175,48 @@
 </script>
 <script>
 
-	//functional polyfills
+	//polyfills
 
+	/* .innerText FireFox fix */
+	function setText (element, text) {
+		if(document.all){
+			element.innerText = text;
+		} else{
+			element.textContent = text;
+		}
+	}
 
+	Array.prototype.random = function() {
+		return this[Math.floor(Math.random() * this.length)];
+	};
+
+	if (![].includes) {
+		Array.prototype.includes = function(searchElement /*, fromIndex*/ ) {'use strict';
+			var O = Object(this);
+			var len = parseInt(O.length) || 0;
+			if (len === 0) {
+				return false;
+			}
+			var n = parseInt(arguments[1]) || 0;
+			var k;
+			if (n >= 0) {
+				k = n;
+			} else {
+				k = len + n;
+				if (k < 0) {k = 0;}
+			}
+			var currentElement;
+			while (k < len) {
+				currentElement = O[k];
+				if (searchElement === currentElement ||
+				   (searchElement !== searchElement && currentElement !== currentElement)) {
+					return true;
+				}
+				k++;
+			}
+			return false;
+		};
+	}
 
 </script>
 <script>
@@ -172,16 +227,35 @@
 		return Math.round(Math.random() * (max - min) + min);
 	};
 
-	function randomColor() {
-		return color_names.random();
+	function randomColor(exclusions) { //array
+		function newColor() {
+			return color_names.random();
+		}
+
+		var color;
+
+		function tryColor() {
+			color = newColor();
+			if (exclusions) {
+				if (exclusions.includes(color)) {
+					tryColor();
+				}
+			}
+		}
+
+		tryColor();
+		return color;
 	}
 
 	//DOM
 
-	var wordContainerElement = function(word) {
+	var wordElement = function() {
+		var word = randomColor();
 		var elm = document.createElement('span');
 
-		elm.style.color = randomColor();
+		//any color except for color of word (creates stroop effect)
+		elm.style.color = randomColor(word);
+
 		elm.style.padding = '0.4em';
 		elm.style.lineHeight = '1.5em';
 
