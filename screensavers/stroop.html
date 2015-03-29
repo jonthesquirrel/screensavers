@@ -12,20 +12,12 @@
 <style>
 
 	body {
-		padding-top: 3em;
-
 		font-family: sans-serif;
 		background: #f9f9f9;
 	}
 
 	a:hover {
 		color: skyblue;
-	}
-
-	.topmiddle {
-		z-index: 2;
-		left: 0;
-		width: 100%;
 	}
 
 	.link {
@@ -48,7 +40,6 @@
 
 		background: transparent;
 		color: white;
-		font-family: sans-serif;
 	}
 
 	.bottomcenter {
@@ -78,13 +69,28 @@
 		z-index: 5;
 	}
 
+	.noselect {
+		-webkit-touch-callout: none;
+		-webkit-user-select: none;
+		-khtml-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
+	}
+
+	#refresh {
+		color: skyblue;
+		margin: 1em;
+	}
+
 </style>
 </head>
 <body>
+	<p>Try to say the <i>color</i> of all the words fast in a row, and not the words themselves! <span class="link noselect" id="refresh">[click to refresh words]</span></p>
 
 	<span class="bottomleft">Stroop Effect!</span>
 
-	<a href="../" class="header bottomcenter">git.io/screensavers</a>
+	<a href="../" class="header bottomcenter" id="bottomheader">git.io/screensavers</a>
 
 	<div class="bottomright link" id="fullscreen">[Full Screen]</div>
 
@@ -133,6 +139,8 @@
 
 	var $fullscreen = document.getElementById('fullscreen');
 	var $UI = document.querySelectorAll('.header');
+	var $bottomheader = document.getElementById('bottomheader');
+	var $refresh = document.getElementById('refresh');
 
 	function hideUI () {
 		for (var i = 0; i < $UI.length; i++) {
@@ -249,15 +257,18 @@
 
 	//DOM
 
-	var wordElement = function() {
+	var wordElement = function(size) {
 		var word = randomColor();
 		var elm = document.createElement('span');
+		elm.classList.add('word', 'noselect');
 
 		//any color except for color of word (creates stroop effect)
 		elm.style.color = randomColor(word);
 
 		elm.style.padding = '0.4em';
-		elm.style.lineHeight = '1.5em';
+		// elm.style.lineHeight = '1.5em';
+
+		elm.style.fontSize = (size ? size : randomInRange(1, 4)) + 'em';
 
 		//adding a space fixes the layout issue (lines not wrapping)
 		setText(elm, ' ' + word);
@@ -265,13 +276,37 @@
 		return elm;
 	};
 
-	//generate words
+	//scatter words around the page
 
-
+	function getLowestPos() {
+		var bottom = $bottomheader.getBoundingClientRect().top;
+		return window.innerHeight - (bottom > 0 ? (window.innerHeight - bottom) : 0);
+	}
 
 	function generate() {
-
+		var max_height = getLowestPos();
+		function iterate() {
+			var elm = wordElement();
+			document.body.appendChild(elm);
+			if (elm.getBoundingClientRect().bottom < max_height) {
+				iterate();
+			} else {
+				elm.parentElement.removeChild(elm);
+			}
+		}
+		iterate();
 	}
+
+	function newWords() {
+		[].forEach.call(document.querySelectorAll('.word'), function(elm) {
+			elm.parentElement.removeChild(elm);
+		});
+		generate();
+	}
+
+	$refresh.addEventListener('click', newWords);
+
+	//init
 
 	function init() {
 		generate();
