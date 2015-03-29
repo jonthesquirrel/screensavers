@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<!-- Copyright (c) 2014 Jonathan Herman - MIT License -->
+<!-- https://github.com/jdh11235/screensavers -->
+
+<html lang="en" manifest="../manifest.appcache">
+	<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+	<title>Stroop • screensaver</title>
+
+<style>
+
+	body {
+		font-family: sans-serif;
+		background: #f9f9f9;
+	}
+
+	a:hover {
+		color: skyblue;
+	}
+
+	.link {
+		cursor: pointer;
+	}
+
+	.link:hover {
+		text-decoration: underline;
+	}
+
+	.bottomleft {
+		z-index: 5;
+		left: 0;
+		padding-left: 0.5em;
+
+		position: fixed;
+		bottom: 0;
+		padding: 0.4em;
+		font-size: 1.3em;
+
+		background: transparent;
+		color: white;
+	}
+
+	.bottomcenter {
+		z-index: 4;
+		left: 0;
+
+		position: fixed;
+		bottom: 0;
+		padding: 0.25em;
+		text-align: center;
+		font-size: 1.3em;
+
+		background: black;
+		color: white;
+		font-family: cursive;
+		width: 100%;
+	}
+
+	.bottomright {
+		position: fixed;
+		bottom: 0;
+		right: 0;
+		padding: 0.5em;
+
+		background: #f9f9f9;
+		border: 0.25em solid black;
+		z-index: 5;
+	}
+
+	.noselect {
+		-webkit-touch-callout: none;
+		-webkit-user-select: none;
+		-khtml-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
+	}
+
+	#refresh {
+		color: skyblue;
+		margin: 1em;
+	}
+
+</style>
+</head>
+<body>
+	<p>Try to say the <i>color</i> of all the words fast in a row, and not the words themselves! <span class="link noselect" id="refresh">[click to refresh words]</span></p>
+
+	<span class="bottomleft">Stroop Effect!</span>
+
+	<a href="../" class="header bottomcenter" id="bottomheader">git.io/screensavers</a>
+
+	<div class="bottomright link" id="fullscreen">[Full Screen]</div>
+
+
+<script>
+	/* begin fullscreen polyfill from http://www.sitepoint.com/use-html5-full-screen-api */
+
+	function enterFullscreen (element) {
+		if (element.requestFullscreen) {
+			element.requestFullscreen();
+		} else if (element.webkitRequestFullscreen) {
+			element.webkitRequestFullscreen();
+		} else if (element.mozRequestFullScreen) {
+			element.mozRequestFullScreen();
+		} else if (element.msRequestFullscreen) {
+			element.msRequestFullscreen();
+		}
+	}
+
+	function leaveFullscreen () {
+		if (document.exitFullscreen) {
+			document.exitFullscreen();
+		} else if (document.webkitExitFullscreen) {
+			document.webkitExitFullscreen();
+		} else if (document.mozCancelFullScreen) {
+			document.mozCancelFullScreen();
+		} else if (document.msExitFullscreen) {
+			document.msExitFullscreen();
+		}
+	}
+
+	function isFullscreen () {
+		if (
+			document.fullscreenElement ||
+			document.webkitFullscreenElement ||
+			document.mozFullScreenElement ||
+			document.msFullscreenElement
+		) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/* end fullscreen polyfill */
+
+	var $fullscreen = document.getElementById('fullscreen');
+	var $UI = document.querySelectorAll('.header');
+	var $bottomheader = document.getElementById('bottomheader');
+	var $refresh = document.getElementById('refresh');
+
+	function hideUI () {
+		for (var i = 0; i < $UI.length; i++) {
+			$UI[i].setAttribute('hidden', '');
+		}
+	}
+
+	function showUI () {
+		for (var i = 0; i < $UI.length; i++) {
+			$UI[i].removeAttribute('hidden');
+		}
+	}
+
+	function toggleFullscreen () {
+		if (isFullscreen()) {
+			showUI();
+			leaveFullscreen();
+		} else {
+			hideUI();
+			enterFullscreen(document.head);
+		}
+	}
+
+	function correctUI () {
+		if (isFullscreen()) {
+			hideUI();
+		} else {
+			showUI();
+		}
+	}
+
+	document.addEventListener('fullscreenchange', correctUI);
+	document.addEventListener('mozfullscreenchange', correctUI);
+	document.addEventListener('MSFullscreenChange', correctUI);
+	document.addEventListener('webkitfullscreenchange', correctUI);
+
+	$fullscreen.addEventListener('click', function() {
+		toggleFullscreen();
+	});
+</script>
+<script>
+
+	//polyfills
+
+	/* .innerText FireFox fix */
+	function setText (element, text) {
+		if(document.all){
+			element.innerText = text;
+		} else{
+			element.textContent = text;
+		}
+	}
+
+	Array.prototype.random = function() {
+		return this[Math.floor(Math.random() * this.length)];
+	};
+
+	if (![].includes) {
+		Array.prototype.includes = function(searchElement /*, fromIndex*/ ) {'use strict';
+			var O = Object(this);
+			var len = parseInt(O.length) || 0;
+			if (len === 0) {
+				return false;
+			}
+			var n = parseInt(arguments[1]) || 0;
+			var k;
+			if (n >= 0) {
+				k = n;
+			} else {
+				k = len + n;
+				if (k < 0) {k = 0;}
+			}
+			var currentElement;
+			while (k < len) {
+				currentElement = O[k];
+				if (searchElement === currentElement ||
+				   (searchElement !== searchElement && currentElement !== currentElement)) {
+					return true;
+				}
+				k++;
+			}
+			return false;
+		};
+	}
+
+</script>
+<script>
+
+	//random utils
+
+	var randomInRange = function (min, max) {
+		return Math.round(Math.random() * (max - min) + min);
+	};
+
+	function randomColor(exclusions) { //array
+		function newColor() {
+			return color_names.random();
+		}
+
+		var color;
+
+		function tryColor() {
+			color = newColor();
+			if (exclusions) {
+				if (exclusions.includes(color)) {
+					tryColor();
+				}
+			}
+		}
+
+		tryColor();
+		return color;
+	}
+
+	//DOM
+
+	var wordElement = function(size) {
+		var word = randomColor();
+		var elm = document.createElement('span');
+		elm.classList.add('word', 'noselect');
+
+		//any color except for color of word (creates stroop effect)
+		elm.style.color = randomColor(word);
+
+		elm.style.padding = '0.4em';
+		// elm.style.lineHeight = '1.5em';
+
+		elm.style.fontSize = (size ? size : randomInRange(1, 4)) + 'em';
+
+		//adding a space fixes the layout issue (lines not wrapping)
+		setText(elm, ' ' + word);
+
+		return elm;
+	};
+
+	//scatter words around the page
+
+	function getLowestPos() {
+		var bottom = $bottomheader.getBoundingClientRect().top;
+		return window.innerHeight - (bottom > 0 ? (window.innerHeight - bottom) : 0);
+	}
+
+	function generate() {
+		var max_height = getLowestPos();
+		function iterate() {
+			var elm = wordElement();
+			document.body.appendChild(elm);
+			if (elm.getBoundingClientRect().bottom < max_height) {
+				iterate();
+			} else {
+				elm.parentElement.removeChild(elm);
+			}
+		}
+		iterate();
+	}
+
+	function newWords() {
+		[].forEach.call(document.querySelectorAll('.word'), function(elm) {
+			elm.parentElement.removeChild(elm);
+		});
+		generate();
+	}
+
+	$refresh.addEventListener('click', newWords);
+
+	//init
+
+	function init() {
+		generate();
+	}
+
+	window.onload = init;
+</script>
+<script>
+	//from http://www.javascripter.net/faq/colornam.htm
+	var color_names = [
+		'Aliceblue',
+		'Antiquewhite',
+		'Aqua',
+		'Aquamarine',
+		'Azure',
+		'Beige',
+		'Bisque',
+		'Black',
+		'Blanchedalmond',
+		'Blue',
+		'Blueviolet',
+		'Brown',
+		'Burlywood',
+		'Cadetblue',
+		'Chartreuse',
+		'Chocolate',
+		'Coral',
+		'Cornflowerblue',
+		'Cornsilk',
+		'Crimson',
+		'Cyan',
+		'Darkblue',
+		'Darkcyan',
+		'Darkgoldenrod',
+		'Darkgray',
+		'Darkgreen',
+		'Darkkhaki',
+		'Darkmagenta',
+		'Darkolivegreen',
+		'Darkorange',
+		'Darkorchid',
+		'Darkred',
+		'Darksalmon',
+		'Darkseagreen',
+		'Darkslateblue',
+		'Darkslategray',
+		'Darkturquoise',
+		'Darkviolet',
+		'Deeppink',
+		'Deepskyblue',
+		'Dimgray',
+		'Dodgerblue',
+		'Firebrick',
+		'Floralwhite',
+		'Forestgreen',
+		'Fuchsia',
+		'Gainsboro',
+		'Ghostwhite',
+		'Gold',
+		'Goldenrod',
+		'Gray',
+		'Green',
+		'Greenyellow',
+		'Honeydew',
+		'Hotpink',
+		'Indianred',
+		'Indigo',
+		'Ivory',
+		'Khaki',
+		'Lavender',
+		'Lavenderblush',
+		'Lawngreen',
+		'Lemonchiffon',
+		'Lightblue',
+		'Lightcoral',
+		'Lightcyan',
+		'Lightgoldenrodyellow',
+		'Lightgreen',
+		'Lightgrey',
+		'Lightpink',
+		'Lightsalmon',
+		'Lightseagreen',
+		'Lightskyblue',
+		'Lightslategray',
+		'Lightsteelblue',
+		'Lightyellow',
+		'Lime',
+		'Limegreen',
+		'Linen',
+		'Magenta',
+		'Maroon',
+		'Mediumaquamarine',
+		'Mediumblue',
+		'Mediumorchid',
+		'Mediumpurple',
+		'Mediumseagreen',
+		'Mediumslateblue',
+		'Mediumspringgreen',
+		'Mediumturquoise',
+		'Mediumvioletred',
+		'Midnightblue',
+		'Mintcream',
+		'Mistyrose',
+		'Moccasin',
+		'Navajowhite',
+		'Navy',
+		'Oldlace',
+		'Olive',
+		'Olivedrab',
+		'Orange',
+		'Orangered',
+		'Orchid',
+		'Palegoldenrod',
+		'Palegreen',
+		'Paleturquoise',
+		'Palevioletred',
+		'Papayawhip',
+		'Peachpuff',
+		'Peru',
+		'Pink',
+		'Plum',
+		'Powderblue',
+		'Purple',
+		'Red',
+		'Rosybrown',
+		'Royalblue',
+		'Saddlebrown',
+		'Salmon',
+		'Sandybrown',
+		'Seagreen',
+		'Seashell',
+		'Sienna',
+		'Silver',
+		'Skyblue',
+		'Slateblue',
+		'Slategray',
+		'Snow',
+		'Springgreen',
+		'Steelblue',
+		'Tan',
+		'Teal',
+		'Thistle',
+		'Tomato',
+		'Turquoise',
+		'Violet',
+		'Wheat',
+		'White',
+		'Whitesmoke',
+		'Yellow',
+		'Yellowgreen'
+	];
+</script>
+</body>
+</html>
